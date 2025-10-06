@@ -543,14 +543,25 @@
 
                 const moduleCard = document.createElement('div');
                 moduleCard.className = 'module-card';
-                moduleCard.innerHTML = `
-                    <div class="module-header">
-                        <div class="module-number">${module.number}</div>
-                        <div class="module-status status-${status}">${statusText}</div>
-                    </div>
-                    <div class="module-title">${module.title}</div>
-                    <div class="module-description">${module.description}</div>
-                    <div class="module-footer">
+               moduleCard.innerHTML = `
+    <div class="module-header">
+        <div class="module-number">${module.number}</div>
+        <div class="module-status status-${status}">${statusText}</div>
+    </div>
+    <div class="module-title">${module.title}</div>
+    <div class="module-description">${module.description}</div>
+    
+    <div style="margin: 15px 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+            <span style="font-size: 0.85em; color: #666;">Progress</span>
+            <span style="font-size: 0.85em; color: #667eea; font-weight: 600;">${progress}%</span>
+        </div>
+        <div style="height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+            <div style="height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: ${progress}%;"></div>
+        </div>
+    </div>
+    
+    <div class="module-footer">
                         <div class="module-stats">
                             <span>📝 ${module.questions} Questions</span>
                             <span>⏱️ ${module.hours}</span>
@@ -605,4 +616,5 @@
         });
     </script>
 </body>
+
 </html>
