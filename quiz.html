@@ -770,6 +770,16 @@
             const xpGained = score;
             currentUser.stats.xp += xpGained;
             currentUser.stats.level = Math.floor(currentUser.stats.xp / 100) + 1;
+            // Update module progress
+if (!currentUser.moduleProgress) {
+    currentUser.moduleProgress = {};
+}
+
+// Calculate progress based on quizzes taken
+const moduleQuizCount = currentUser.quizHistory.filter(q => q.moduleId === selectedModule).length;
+const progressPerQuiz = 20; // Each quiz = 20% progress
+const newProgress = Math.min(moduleQuizCount * progressPerQuiz, 100);
+currentUser.moduleProgress[selectedModule] = newProgress;
 
             // Save quiz to history
 if (!currentUser.quizHistory) {
@@ -848,3 +858,4 @@ currentUser.quizHistory.push({
 </body>
 
 </html>
+
