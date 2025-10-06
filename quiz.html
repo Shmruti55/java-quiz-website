@@ -1,563 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz - Java Quiz Master</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            min-height: 100vh;
-        }
-
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .navbar-brand {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .quiz-container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .quiz-header {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .quiz-info h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .difficulty-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-
-        .diff-easy { background: #e8f5e9; color: #388e3c; }
-        .diff-medium { background: #fff3e0; color: #f57c00; }
-        .diff-hard { background: #ffebee; color: #d32f2f; }
-
-        .quiz-stats {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .timer {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .question-card {
-            background: white;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .question-number {
-            color: #667eea;
-            font-size: 0.9em;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .question-text {
-            font-size: 1.3em;
-            color: #333;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .option {
-            padding: 18px 25px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1.1em;
-            background: #fafafa;
-        }
-
-        .option:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-            transform: translateX(5px);
-        }
-
-        .option.selected {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .option.correct {
-            border-color: #388e3c;
-            background: #e8f5e9;
-            color: #388e3c;
-        }
-
-        .option.incorrect {
-            border-color: #d32f2f;
-            background: #ffebee;
-            color: #d32f2f;
-        }
-
-        .option.disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .quiz-actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-secondary:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.5s;
-        }
-
-        .results-card {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            text-align: center;
-        }
-
-        .results-card h2 {
-            color: #333;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-
-        .score-display {
-            font-size: 4em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 30px 0;
-        }
-
-        .results-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .result-stat {
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .result-stat-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .result-stat-label {
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .badges-earned {
-            margin: 30px 0;
-            padding: 20px;
-            background: #fff9e6;
-            border-radius: 10px;
-        }
-
-        .badges-earned h3 {
-            color: #f57c00;
-            margin-bottom: 15px;
-        }
-
-        .badge-list {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .badge-item {
-            font-size: 3em;
-        }
-
-        @media (max-width: 768px) {
-            .quiz-header {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .quiz-stats {
-                flex-wrap: wrap;
-            }
-
-            .results-stats {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="navbar-brand">🎓 Java Quiz Master</div>
-        <button class="btn btn-secondary" onclick="exitQuiz()" style="padding: 8px 20px;">Exit Quiz</button>
-    </nav>
-
-    <div class="quiz-container">
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-        </div>
-
-        <div class="quiz-header">
-            <div class="quiz-info">
-                <h2 id="module-title">Module Title</h2>
-                <span class="difficulty-badge" id="difficulty-badge">Medium</span>
-            </div>
-            <div class="quiz-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="score-display">0</div>
-                    <div class="stat-label">Score</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="correct-display">0</div>
-                    <div class="stat-label">Correct</div>
-                </div>
-                <div class="timer" id="timer">01:00</div>
-            </div>
-        </div>
-
-        <div id="quiz-content">
-            <div class="question-card">
-                <div class="question-number" id="question-number">Question 1 of 10</div>
-                <div class="question-text" id="question-text">Loading question...</div>
-                <div class="options-container" id="options-container"></div>
-            </div>
-
-            <div class="quiz-actions">
-                <button class="btn btn-secondary" onclick="previousQuestion()" id="prev-btn">Previous</button>
-                <button class="btn btn-primary" onclick="nextQuestion()" id="next-btn" disabled>Next Question</button>
-            </div>
-        </div>
-
-        <div id="results-content" style="display: none;">
-            <!-- Results will be shown here -->
-        </div>
-    </div>
-
-    <script>
-        // Check authentication
+<script>
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (!currentUser) {
             window.location.href = 'index.html';
         }
 
-        // Get selected module
         const selectedModule = parseInt(localStorage.getItem('selectedModule')) || 0;
 
-        // Quiz questions database
         const quizQuestions = {
-            0: [ // Prerequisites
-                {
-                    question: "What is the main principle of Object-Oriented Programming?",
-                    options: ["Encapsulation", "Compilation", "Syntax", "Debugging"],
-                    correct: 0,
-                    difficulty: "easy"
-                },
-                {
-                    question: "Which of the following is NOT a pillar of OOP?",
-                    options: ["Inheritance", "Polymorphism", "Compilation", "Abstraction"],
-                    correct: 2,
-                    difficulty: "easy"
-                },
-                {
-                    question: "What does API stand for?",
-                    options: ["Application Programming Interface", "Advanced Programming Interface", "Application Process Interface", "Advanced Process Integration"],
-                    correct: 0,
-                    difficulty: "easy"
-                },
-                {
-                    question: "In OOP, what is a class?",
-                    options: ["A function", "A blueprint for objects", "A variable", "A loop"],
-                    correct: 1,
-                    difficulty: "medium"
-                },
-                {
-                    question: "What is encapsulation in OOP?",
-                    options: ["Hiding implementation details", "Creating multiple classes", "Using loops", "Declaring variables"],
-                    correct: 0,
-                    difficulty: "medium"
-                },
-                {
-                    question: "Which data structure uses LIFO principle?",
-                    options: ["Queue", "Stack", "Array", "Tree"],
-                    correct: 1,
-                    difficulty: "medium"
-                },
-                {
-                    question: "What is the time complexity of accessing an element in an array?",
-                    options: ["O(n)", "O(log n)", "O(1)", "O(n²)"],
-                    correct: 2,
-                    difficulty: "hard"
-                },
-                {
-                    question: "Which sorting algorithm has the best average case time complexity?",
-                    options: ["Bubble Sort", "Insertion Sort", "Merge Sort", "Selection Sort"],
-                    correct: 2,
-                    difficulty: "hard"
-                },
-                {
-                    question: "What is polymorphism?",
-                    options: ["Many forms", "Single form", "No form", "Two forms"],
-                    correct: 0,
-                    difficulty: "easy"
-                },
-                {
-                    question: "What does DRY principle stand for?",
-                    options: ["Don't Repeat Yourself", "Do Repeat Yourself", "Don't Return Yet", "Do Return Yearly"],
-                    correct: 0,
-                    difficulty: "medium"
-                }
+            0: [ // Prerequisites - 20 questions
+                {question: "What is the main principle of Object-Oriented Programming?", options: ["Encapsulation", "Compilation", "Syntax", "Debugging"], correct: 0, difficulty: "easy"},
+                {question: "Which of the following is NOT a pillar of OOP?", options: ["Inheritance", "Polymorphism", "Compilation", "Abstraction"], correct: 2, difficulty: "easy"},
+                {question: "What does API stand for?", options: ["Application Programming Interface", "Advanced Programming Interface", "Application Process Interface", "Advanced Process Integration"], correct: 0, difficulty: "easy"},
+                {question: "In OOP, what is a class?", options: ["A function", "A blueprint for objects", "A variable", "A loop"], correct: 1, difficulty: "medium"},
+                {question: "What is encapsulation in OOP?", options: ["Hiding implementation details", "Creating multiple classes", "Using loops", "Declaring variables"], correct: 0, difficulty: "medium"},
+                {question: "Which data structure uses LIFO principle?", options: ["Queue", "Stack", "Array", "Tree"], correct: 1, difficulty: "medium"},
+                {question: "What is the time complexity of accessing an element in an array?", options: ["O(n)", "O(log n)", "O(1)", "O(n²)"], correct: 2, difficulty: "hard"},
+                {question: "Which sorting algorithm has the best average case time complexity?", options: ["Bubble Sort", "Insertion Sort", "Merge Sort", "Selection Sort"], correct: 2, difficulty: "hard"},
+                {question: "What is polymorphism?", options: ["Many forms", "Single form", "No form", "Two forms"], correct: 0, difficulty: "easy"},
+                {question: "What does DRY principle stand for?", options: ["Don't Repeat Yourself", "Do Repeat Yourself", "Don't Return Yet", "Do Return Yearly"], correct: 0, difficulty: "medium"},
+                {question: "What is abstraction in OOP?", options: ["Hiding complex details", "Showing all details", "Creating objects", "Deleting objects"], correct: 0, difficulty: "medium"},
+                {question: "Which programming paradigm focuses on objects?", options: ["Procedural", "Object-Oriented", "Functional", "Logical"], correct: 1, difficulty: "easy"},
+                {question: "What is inheritance in OOP?", options: ["Creating new classes from existing ones", "Deleting classes", "Copying methods", "None of these"], correct: 0, difficulty: "medium"},
+                {question: "What is a constructor?", options: ["Special method to initialize objects", "Destructor", "Variable", "Loop"], correct: 0, difficulty: "medium"},
+                {question: "Which data structure uses FIFO principle?", options: ["Stack", "Queue", "Tree", "Graph"], correct: 1, difficulty: "easy"},
+                {question: "What is method overloading?", options: ["Same name, different parameters", "Different names", "No parameters", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is the purpose of getter methods?", options: ["Access private variables", "Set values", "Delete objects", "Create objects"], correct: 0, difficulty: "medium"},
+                {question: "What is composition in OOP?", options: ["Has-a relationship", "Is-a relationship", "Was-a relationship", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is an interface?", options: ["Contract for classes", "Concrete class", "Variable", "Method"], correct: 0, difficulty: "hard"},
+                {question: "What is the difference between class and object?", options: ["Class is blueprint, object is instance", "No difference", "Object is blueprint", "Class is instance"], correct: 0, difficulty: "medium"}
             ],
-            1: [ // Introduction to OOP in Java
-                {
-                    question: "Which keyword is used to create a class in Java?",
-                    options: ["class", "Class", "new", "object"],
-                    correct: 0,
-                    difficulty: "easy"
-                },
-                {
-                    question: "What is the extension of Java source files?",
-                    options: [".java", ".class", ".jar", ".jav"],
-                    correct: 0,
-                    difficulty: "easy"
-                },
-                {
-                    question: "Which method is the entry point of a Java application?",
-                    options: ["start()", "main()", "run()", "begin()"],
-                    correct: 1,
-                    difficulty: "easy"
-                },
-                {
-                    question: "What is the correct syntax to create an object in Java?",
-                    options: ["ClassName obj = new ClassName();", "ClassName obj = ClassName();", "new ClassName() = obj;", "create ClassName obj;"],
-                    correct: 0,
-                    difficulty: "medium"
-                },
-                {
-                    question: "Which access modifier makes a member accessible only within its own class?",
-                    options: ["public", "protected", "private", "default"],
-                    correct: 2,
-                    difficulty: "medium"
-                },
-                {
-                    question: "What is constructor in Java?",
-                    options: ["A method", "A special method to initialize objects", "A variable", "A class"],
-                    correct: 1,
-                    difficulty: "medium"
-                },
-                {
-                    question: "Can a constructor be private in Java?",
-                    options: ["Yes", "No", "Only in abstract classes", "Only in interfaces"],
-                    correct: 0,
-                    difficulty: "hard"
-                },
-                {
-                    question: "What is method overloading?",
-                    options: ["Same method name with different parameters", "Different method names", "Same method in different classes", "None of these"],
-                    correct: 0,
-                    difficulty: "medium"
-                },
-                {
-                    question: "Which package is imported by default in Java?",
-                    options: ["java.util", "java.io", "java.lang", "java.net"],
-                    correct: 2,
-                    difficulty: "hard"
-                },
-                {
-                    question: "What is the use of 'this' keyword in Java?",
-                    options: ["Refers to current object", "Creates new object", "Deletes object", "None"],
-                    correct: 0,
-                    difficulty: "medium"
-                }
+            1: [ // Introduction to OOP in Java - 20 questions
+                {question: "Which keyword is used to create a class in Java?", options: ["class", "Class", "new", "object"], correct: 0, difficulty: "easy"},
+                {question: "What is the extension of Java source files?", options: [".java", ".class", ".jar", ".jav"], correct: 0, difficulty: "easy"},
+                {question: "Which method is the entry point of a Java application?", options: ["start()", "main()", "run()", "begin()"], correct: 1, difficulty: "easy"},
+                {question: "What is the correct syntax to create an object in Java?", options: ["ClassName obj = new ClassName();", "ClassName obj = ClassName();", "new ClassName() = obj;", "create ClassName obj;"], correct: 0, difficulty: "medium"},
+                {question: "Which access modifier makes a member accessible only within its own class?", options: ["public", "protected", "private", "default"], correct: 2, difficulty: "medium"},
+                {question: "What is constructor in Java?", options: ["A method", "A special method to initialize objects", "A variable", "A class"], correct: 1, difficulty: "medium"},
+                {question: "Can a constructor be private in Java?", options: ["Yes", "No", "Only in abstract classes", "Only in interfaces"], correct: 0, difficulty: "hard"},
+                {question: "What is method overloading?", options: ["Same method name with different parameters", "Different method names", "Same method in different classes", "None of these"], correct: 0, difficulty: "medium"},
+                {question: "Which package is imported by default in Java?", options: ["java.util", "java.io", "java.lang", "java.net"], correct: 2, difficulty: "hard"},
+                {question: "What is the use of 'this' keyword in Java?", options: ["Refers to current object", "Creates new object", "Deletes object", "None"], correct: 0, difficulty: "medium"},
+                {question: "What is the size of int in Java?", options: ["16 bits", "32 bits", "64 bits", "8 bits"], correct: 1, difficulty: "easy"},
+                {question: "Which keyword is used to prevent inheritance?", options: ["static", "final", "abstract", "private"], correct: 1, difficulty: "hard"},
+                {question: "What is the default value of boolean in Java?", options: ["true", "false", "null", "0"], correct: 1, difficulty: "easy"},
+                {question: "Can we overload main method in Java?", options: ["Yes", "No", "Only once", "Depends"], correct: 0, difficulty: "medium"},
+                {question: "What is String in Java?", options: ["Primitive type", "Object", "Keyword", "Operator"], correct: 1, difficulty: "medium"},
+                {question: "Which loop executes at least once?", options: ["while", "for", "do-while", "None"], correct: 2, difficulty: "easy"},
+                {question: "What is garbage collection in Java?", options: ["Automatic memory management", "Manual deletion", "Compiler feature", "None"], correct: 0, difficulty: "hard"},
+                {question: "Can we declare class as private in Java?", options: ["Yes", "No", "Only inner class", "Depends"], correct: 2, difficulty: "hard"},
+                {question: "What is wrapper class in Java?", options: ["Object representation of primitives", "Primitive type", "Interface", "Abstract class"], correct: 0, difficulty: "medium"},
+                {question: "Which operator is used for string concatenation?", options: ["+", "-", "*", "&"], correct: 0, difficulty: "easy"}
             ],
-            2: [ // Inheritance & Exception Handling
-                {
-                    question: "Which keyword is used for inheritance in Java?",
-                    options: ["inherits", "extends", "implements", "super"],
-                    correct: 1,
-                    difficulty: "easy"
-                },
-                {
-                    question: "What is the maximum number of classes a Java class can extend?",
-                    options: ["1", "2", "Multiple", "Unlimited"],
-                    correct: 0,
-                    difficulty: "easy"
-                },
-                {
-                    question: "Which keyword is used to call parent class constructor?",
-                    options: ["this", "super", "parent", "base"],
-                    correct: 1,
-                    difficulty: "easy"
-                },
-                {
-                    question: "What is method overriding?",
-                    options: ["Same method in child class", "Different method", "Constructor", "None"],
-                    correct: 0,
-                    difficulty: "medium"
-                },
-                {
-                    question: "Which exception is thrown for array index out of bounds?",
-                    options: ["ArrayException", "IndexException", "ArrayIndexOutOfBoundsException", "BoundsException"],
-                    correct: 2,
-                    difficulty: "medium"
-                },
-                {
-                    question: "What is the parent class of all exception classes?",
-                    options: ["Exception", "Throwable", "Error", "RuntimeException"],
-                    correct: 1,
-                    difficulty: "hard"
-                },
-                {
-                    question: "Which block is always executed in exception handling?",
-                    options: ["try", "catch", "finally", "throw"],
-                    correct: 2,
-                    difficulty: "medium"
-                },
-                {
-                    question: "Can we have multiple catch blocks for a single try block?",
-                    options: ["Yes", "No", "Only two", "Only three"],
-                    correct: 0,
-                    difficulty: "easy"
-                },
-                {
-                    question: "What is the difference between throw and throws?",
-                    options: ["throw is used to throw exception, throws declares exception", "No difference", "throws throws exception", "throw declares exception"],
-                    correct: 0,
-                    difficulty: "hard"
-                },
-                {
-                    question: "Can we override static methods in Java?",
-                    options: ["Yes", "No", "Only in child class", "Depends"],
-                    correct: 1,
-                    difficulty: "medium"
-                }
+            2: [ // Inheritance & Exception Handling - 20 questions
+                {question: "Which keyword is used for inheritance in Java?", options: ["inherits", "extends", "implements", "super"], correct: 1, difficulty: "easy"},
+                {question: "What is the maximum number of classes a Java class can extend?", options: ["1", "2", "Multiple", "Unlimited"], correct: 0, difficulty: "easy"},
+                {question: "Which keyword is used to call parent class constructor?", options: ["this", "super", "parent", "base"], correct: 1, difficulty: "easy"},
+                {question: "What is method overriding?", options: ["Same method in child class", "Different method", "Constructor", "None"], correct: 0, difficulty: "medium"},
+                {question: "Which exception is thrown for array index out of bounds?", options: ["ArrayException", "IndexException", "ArrayIndexOutOfBoundsException", "BoundsException"], correct: 2, difficulty: "medium"},
+                {question: "What is the parent class of all exception classes?", options: ["Exception", "Throwable", "Error", "RuntimeException"], correct: 1, difficulty: "hard"},
+                {question: "Which block is always executed in exception handling?", options: ["try", "catch", "finally", "throw"], correct: 2, difficulty: "medium"},
+                {question: "Can we have multiple catch blocks for a single try block?", options: ["Yes", "No", "Only two", "Only three"], correct: 0, difficulty: "easy"},
+                {question: "What is the difference between throw and throws?", options: ["throw is used to throw exception, throws declares exception", "No difference", "throws throws exception", "throw declares exception"], correct: 0, difficulty: "hard"},
+                {question: "Can we override static methods in Java?", options: ["Yes", "No", "Only in child class", "Depends"], correct: 1, difficulty: "medium"},
+                {question: "What is multilevel inheritance?", options: ["Chain of inheritance", "Multiple parents", "Single parent", "No inheritance"], correct: 0, difficulty: "medium"},
+                {question: "Can constructors be inherited?", options: ["Yes", "No", "Only public", "Depends"], correct: 1, difficulty: "hard"},
+                {question: "What is instanceof operator used for?", options: ["Check object type", "Create object", "Delete object", "None"], correct: 0, difficulty: "medium"},
+                {question: "Which exception is checked exception?", options: ["NullPointerException", "IOException", "ArithmeticException", "ArrayIndexOutOfBoundsException"], correct: 1, difficulty: "hard"},
+                {question: "Can we override private methods?", options: ["Yes", "No", "Only in same package", "Depends"], correct: 1, difficulty: "easy"},
+                {question: "What is the purpose of finally block?", options: ["Execute cleanup code", "Catch exceptions", "Throw exceptions", "None"], correct: 0, difficulty: "medium"},
+                {question: "Can abstract class have constructor?", options: ["Yes", "No", "Only default", "Depends"], correct: 0, difficulty: "hard"},
+                {question: "What is method hiding in Java?", options: ["Static method in child with same name", "Private method", "Abstract method", "None"], correct: 0, difficulty: "hard"},
+                {question: "Which keyword is used to prevent method overriding?", options: ["static", "final", "private", "abstract"], correct: 1, difficulty: "medium"},
+                {question: "Can we catch multiple exceptions in single catch?", options: ["Yes with pipe", "No", "Only in Java 7+", "Both A and C"], correct: 3, difficulty: "medium"}
+            ],
+            3: [ // Client and Server Side Programming (JDBC) - 20 questions
+                {question: "What does JDBC stand for?", options: ["Java Database Connectivity", "Java Data Connection", "Java Direct Communication", "Java Database Connection"], correct: 0, difficulty: "easy"},
+                {question: "Which package contains JDBC classes?", options: ["java.jdbc", "java.sql", "java.database", "java.db"], correct: 1, difficulty: "easy"},
+                {question: "Which JDBC driver type is pure Java driver?", options: ["Type 1", "Type 2", "Type 3", "Type 4"], correct: 3, difficulty: "medium"},
+                {question: "Which method is used to execute SQL SELECT query?", options: ["execute()", "executeQuery()", "executeUpdate()", "executeSql()"], correct: 1, difficulty: "medium"},
+                {question: "What is PreparedStatement used for?", options: ["Precompiled SQL", "Dynamic queries", "Batch processing", "All of these"], correct: 3, difficulty: "medium"},
+                {question: "Which method commits a transaction in JDBC?", options: ["commit()", "save()", "execute()", "finish()"], correct: 0, difficulty: "easy"},
+                {question: "What is ResultSet in JDBC?", options: ["Table data", "Query result", "Database cursor", "All of these"], correct: 3, difficulty: "hard"},
+                {question: "Which JDBC driver connects Java to database via ODBC?", options: ["Type 1", "Type 2", "Type 3", "Type 4"], correct: 0, difficulty: "hard"},
+                {question: "What does executeUpdate() method return?", options: ["ResultSet", "Boolean", "Number of rows affected", "Connection"], correct: 2, difficulty: "medium"},
+                {question: "Which method is used to close database connection?", options: ["close()", "end()", "disconnect()", "terminate()"], correct: 0, difficulty: "easy"},
+                {question: "What is Statement interface used for?", options: ["Execute SQL queries", "Create connection", "Close connection", "None"], correct: 0, difficulty: "medium"},
+                {question: "Which method moves cursor to next row in ResultSet?", options: ["next()", "move()", "forward()", "advance()"], correct: 0, difficulty: "easy"},
+                {question: "What is CallableStatement used for?", options: ["Stored procedures", "SELECT queries", "INSERT queries", "CREATE queries"], correct: 0, difficulty: "hard"},
+                {question: "Which method sets auto-commit to false?", options: ["setAutoCommit(false)", "autoCommit(false)", "commit(false)", "noCommit()"], correct: 0, difficulty: "medium"},
+                {question: "What is batch processing in JDBC?", options: ["Execute multiple queries together", "Single query", "Connection pooling", "None"], correct: 0, difficulty: "hard"},
+                {question: "Which method retrieves data from ResultSet?", options: ["get()", "retrieve()", "getString()", "fetch()"], correct: 2, difficulty: "medium"},
+                {question: "What is DriverManager used for?", options: ["Manage JDBC drivers", "Execute queries", "Create tables", "None"], correct: 0, difficulty: "easy"},
+                {question: "Which method rollbacks a transaction?", options: ["rollback()", "undo()", "revert()", "cancel()"], correct: 0, difficulty: "medium"},
+                {question: "What is connection pooling?", options: ["Reusing database connections", "Creating connections", "Closing connections", "None"], correct: 0, difficulty: "hard"},
+                {question: "Which exception is thrown for SQL errors?", options: ["SQLException", "DatabaseException", "SQLError", "JDBCException"], correct: 0, difficulty: "easy"}
+            ],
+            4: [ // Fundamentals of JavaScript/Servlets/JSP - 20 questions
+                {question: "What is a Servlet in Java?", options: ["Server-side component", "Client-side script", "Database driver", "HTML template"], correct: 0, difficulty: "easy"},
+                {question: "Which method handles GET requests in Servlet?", options: ["doGet()", "handleGet()", "processGet()", "serviceGet()"], correct: 0, difficulty: "easy"},
+                {question: "What does JSP stand for?", options: ["Java Server Pages", "JavaScript Pages", "Java Standard Pages", "Java Servlet Pages"], correct: 0, difficulty: "easy"},
+                {question: "Which object represents HTTP request in Servlet?", options: ["HttpServletRequest", "ServletRequest", "RequestObject", "HTTPRequest"], correct: 0, difficulty: "medium"},
+                {question: "What is the DOM in JavaScript?", options: ["Data Object Model", "Document Object Model", "Dynamic Object Model", "Display Object Model"], correct: 1, difficulty: "easy"},
+                {question: "Which method is used to get form data in Servlet?", options: ["getParameter()", "getData()", "getForm()", "retrieveData()"], correct: 0, difficulty: "medium"},
+                {question: "What is session tracking in Servlets?", options: ["Tracking user sessions", "Database tracking", "Error tracking", "Performance tracking"], correct: 0, difficulty: "medium"},
+                {question: "Which HTTP method is used to submit form data?", options: ["GET", "POST", "PUT", "Both GET and POST"], correct: 3, difficulty: "hard"},
+                {question: "What is servlet lifecycle?", options: ["init(), service(), destroy()", "start(), run(), stop()", "create(), execute(), end()", "begin(), process(), finish()"], correct: 0, difficulty: "hard"},
+                {question: "Which JavaScript method adds HTML content to element?", options: ["innerHTML", "addHTML", "setContent", "insertHTML"], correct: 0, difficulty: "medium"},
+                {question: "What is HttpSession used for?", options: ["Store user data across requests", "Handle HTTP", "Execute queries", "None"], correct: 0, difficulty: "medium"},
+                {question: "Which method handles POST requests?", options: ["doPost()", "handlePost()", "processPost()", "servicePost()"], correct: 0, difficulty: "easy"},
+                {question: "What is RequestDispatcher used for?", options: ["Forward or include resources", "Handle requests", "Create sessions", "None"], correct: 0, difficulty: "hard"},
+                {question: "Which method sends redirect response?", options: ["sendRedirect()", "redirect()", "forward()", "move()"], correct: 0, difficulty: "medium"},
+                {question: "What is filter in Servlets?", options: ["Intercepts requests/responses", "Database filter", "HTML filter", "None"], correct: 0, difficulty: "hard"},
+                {question: "Which JavaScript method selects element by ID?", options: ["getElementById()", "selectId()", "getElement()", "findById()"], correct: 0, difficulty: "easy"},
+                {question: "What is ServletConfig used for?", options: ["Servlet initialization parameters", "HTTP configuration", "Database config", "None"], correct: 0, difficulty: "medium"},
+                {question: "Which method gets servlet name?", options: ["getServletName()", "getName()", "getServlet()", "servletName()"], correct: 0, difficulty: "medium"},
+                {question: "What is cookie in Servlets?", options: ["Small data stored on client", "Server data", "Database entry", "None"], correct: 0, difficulty: "easy"},
+                {question: "Which JavaScript event fires on page load?", options: ["onclick", "onload", "onstart", "onready"], correct: 1, difficulty: "medium"}
+            ],
+            5: [ // Web Programming using React - 20 questions
+                {question: "What is React?", options: ["JavaScript library for UI", "Programming language", "Database", "Web server"], correct: 0, difficulty: "easy"},
+                {question: "What are components in React?", options: ["Reusable UI pieces", "Database tables", "CSS files", "HTML tags"], correct: 0, difficulty: "easy"},
+                {question: "What is JSX in React?", options: ["JavaScript XML", "Java Syntax Extension", "JSON Extended", "JavaScript Export"], correct: 0, difficulty: "easy"},
+                {question: "What are props in React?", options: ["Properties passed to components", "CSS properties", "HTML attributes", "State variables"], correct: 0, difficulty: "medium"},
+                {question: "What is state in React?", options: ["Component's data", "CSS styling", "HTML structure", "Props values"], correct: 0, difficulty: "medium"},
+                {question: "Which hook is used to manage state?", options: ["useState", "useEffect", "useContext", "useReducer"], correct: 0, difficulty: "medium"},
+                {question: "What is conditional rendering in React?", options: ["Render based on condition", "Render all components", "CSS rendering", "HTML rendering"], correct: 0, difficulty: "easy"},
+                {question: "What is React Router used for?", options: ["Navigation between pages", "State management", "API calls", "Styling"], correct: 0, difficulty: "hard"},
+                {question: "What is Virtual DOM?", options: ["Lightweight copy of DOM", "Real DOM", "Database", "CSS model"], correct: 0, difficulty: "hard"},
+                {question: "Which method is called when component mounts?", options: ["componentDidMount", "componentStart", "componentInit", "componentRender"], correct: 0, difficulty: "medium"},
+                {question: "What is useEffect hook used for?", options: ["Side effects", "State management", "Props passing", "Routing"], correct: 0, difficulty: "medium"},
+                {question: "What are React fragments?", options: ["Group elements without div", "Database fragments", "CSS fragments", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is prop drilling?", options: ["Passing props through multiple levels", "Creating props", "Deleting props", "None"], correct: 0, difficulty: "hard"},
+                {question: "Which method updates state?", options: ["setState", "updateState", "changeState", "modifyState"], correct: 0, difficulty: "easy"},
+                {question: "What is React context?", options: ["Global state management", "Local state", "Props", "Events"], correct: 0, difficulty: "medium"},
+                {question: "What are controlled components?", options: ["Form inputs controlled by state", "Uncontrolled inputs", "Props components", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is useRef hook used for?", options: ["Reference DOM elements", "State management", "Side effects", "Routing"], correct: 0, difficulty: "medium"},
+                {question: "What is React lifecycle?", options: ["Component creation to unmounting", "Rendering only", "Props passing", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is key prop in React lists?", options: ["Unique identifier for elements", "CSS property", "Event handler", "None"], correct: 0, difficulty: "medium"},
+                {question: "What is React.memo()?", options: ["Performance optimization", "State management", "Routing", "Styling"], correct: 0, difficulty: "hard"}
+            ],
+            6: [ // Application of Spring Framework - 20 questions
+                {question: "What is Spring Framework?", options: ["Java application framework", "Database", "Web server", "Programming language"], correct: 0, difficulty: "easy"},
+                {question: "What is Dependency Injection?", options: ["Design pattern for loose coupling", "Database injection", "Code injection", "SQL injection"], correct: 0, difficulty: "easy"},
+                {question: "What does IoC stand for?", options: ["Inversion of Control", "Input Output Control", "Internal Object Control", "Interface of Control"], correct: 0, difficulty: "easy"},
+                {question: "What is AOP in Spring?", options: ["Aspect Oriented Programming", "Application Object Programming", "Advanced Object Processing", "Automated Object Protocol"], correct: 0, difficulty: "medium"},
+                {question: "What is Spring MVC?", options: ["Model View Controller", "Most Valuable Component", "Model Variable Control", "Main View Component"], correct: 0, difficulty: "medium"},
+                {question: "Which annotation marks a class as controller?", options: ["@Controller", "@Component", "@Service", "@Bean"], correct: 0, difficulty: "medium"},
+                {question: "What is Spring Boot?", options: ["Simplifies Spring development", "Database tool", "Testing framework", "Web server"], correct: 0, difficulty: "easy"},
+                {question: "What are RESTful services?", options: ["Architectural style for APIs", "Database services", "File services", "Email services"], correct: 0, difficulty: "hard"},
+                {question: "Which annotation for dependency injection?", options: ["@Autowired", "@Inject", "@Resource", "All of these"], correct: 3, difficulty: "hard"},
+                {question: "What is @RequestMapping for?", options: ["Map HTTP requests", "Map database tables", "Map variables", "Map objects"], correct: 0, difficulty: "medium"},
+                {question: "What is @Component annotation?", options: ["Marks class as Spring bean", "Database component", "View component", "None"], correct: 0, difficulty: "medium"},
+                {question: "What is @Service annotation used for?", options: ["Business logic layer", "Controller layer", "Database layer", "View layer"], correct: 0, difficulty: "medium"},
+                {question: "What is @Repository for?", options: ["Data access layer", "Service layer", "Controller layer", "None"], correct: 0, difficulty: "medium"},
+                {question: "What is Spring Bean?", options: ["Object managed by Spring", "Database bean", "Java bean", "Session bean"], correct: 0, difficulty: "easy"},
+                {question: "What is @Configuration annotation?", options: ["Define configuration classes", "Database config", "View config", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is ApplicationContext?", options: ["Spring IoC container", "Database context", "Web context", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is @ResponseBody used for?", options: ["Return data as JSON/XML", "HTML response", "Redirect response", "None"], correct: 0, difficulty: "medium"},
+                {question: "What is Spring Data JPA?", options: ["Database access framework", "View framework", "Security framework", "None"], correct: 0, difficulty: "hard"},
+                {question: "What is @PathVariable for?", options: ["Extract values from URL", "Request parameters", "Form data", "None"], correct: 0, difficulty: "medium"},
+                {question: "What is Spring Security?", options: ["Authentication and authorization", "Database security", "Network security", "None"], correct: 0, difficulty: "medium"}
             ]
         };
 
-        // Add more modules (3-6) with placeholder questions
-        for (let i = 3; i <= 6; i++) {
-            quizQuestions[i] = quizQuestions[1].map(q => ({...q})); // Copy questions for now
-        }
-
-        // Quiz state
+        // Rest of the JavaScript code remains the same...
         let currentQuestionIndex = 0;
         let score = 0;
         let correctAnswers = 0;
@@ -565,13 +171,12 @@
         let answered = false;
         let difficulty = "medium";
         let consecutiveCorrect = 0;
-        let timeLeft = 60;
+        let timeLeft = 120; // Changed to 2 minutes for 20 questions
         let timerInterval;
 
         const questions = quizQuestions[selectedModule] || quizQuestions[0];
         const totalQuestions = questions.length;
 
-        // Module names
         const moduleNames = {
             0: "Prerequisites",
             1: "Introduction to OOP in Java",
@@ -582,7 +187,6 @@
             6: "Application of Spring Framework"
         };
 
-        // Initialize quiz
         document.getElementById('module-title').textContent = moduleNames[selectedModule];
         updateDifficultyBadge();
         loadQuestion();
@@ -623,7 +227,6 @@
             answered = false;
             selectedAnswer = null;
             
-            // Filter questions by difficulty
             const filteredQuestions = questions.filter(q => q.difficulty === difficulty);
             const question = filteredQuestions[currentQuestionIndex % filteredQuestions.length] || questions[currentQuestionIndex];
             
@@ -631,7 +234,6 @@
                 `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
             document.getElementById('question-text').textContent = question.question;
             
-            // Load options
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
             
@@ -643,11 +245,9 @@
                 optionsContainer.appendChild(optionDiv);
             });
             
-            // Update progress
             const progress = ((currentQuestionIndex) / totalQuestions) * 100;
             document.getElementById('progress-fill').style.width = progress + '%';
             
-            // Update buttons
             document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
             document.getElementById('next-btn').disabled = true;
         }
@@ -657,7 +257,6 @@
             
             selectedAnswer = index;
             
-            // Update UI
             const options = document.querySelectorAll('.option');
             options.forEach((opt, i) => {
                 opt.classList.remove('selected');
@@ -709,7 +308,6 @@
                 consecutiveCorrect++;
                 options[selectedAnswer].classList.add('correct');
                 
-                // Adaptive difficulty - increase after 2 correct
                 if (consecutiveCorrect >= 2 && difficulty !== "hard") {
                     difficulty = difficulty === "easy" ? "medium" : "hard";
                     consecutiveCorrect = 0;
@@ -720,7 +318,6 @@
                 options[selectedAnswer].classList.add('incorrect');
                 options[question.correct].classList.add('correct');
                 
-                // Adaptive difficulty - decrease after wrong
                 if (difficulty !== "easy") {
                     difficulty = difficulty === "hard" ? "medium" : "easy";
                     updateDifficultyBadge();
@@ -734,100 +331,12 @@
         function showResults() {
             clearInterval(timerInterval);
             
-            // Update user stats
             currentUser.stats.totalQuizzes++;
             currentUser.stats.totalScore += score;
             
-            // Award badges
             const newBadges = [];
-            if (score >= 200) newBadges.push("🏆");
+            if (score >= 300) newBadges.push("🏆");
             if (correctAnswers === totalQuestions) newBadges.push("💯");
-            if (score >= 250) newBadges.push("⭐");
+            if (score >= 400) newBadges.push("⭐");
             
-            currentUser.stats.badges = [...new Set([...currentUser.stats.badges, ...newBadges])];
-            
-            // Update streak
-            const today = new Date().toDateString();
-            const lastDate = currentUser.stats.lastQuizDate;
-            
-            if (lastDate === today) {
-                // Already played today
-            } else if (lastDate === new Date(Date.now() - 86400000).toDateString()) {
-                // Played yesterday - continue streak
-                currentUser.stats.currentStreak++;
-            } else {
-                // Streak broken
-                currentUser.stats.currentStreak = 1;
-            }
-            
-            currentUser.stats.lastQuizDate = today;
-            currentUser.stats.longestStreak = Math.max(
-                currentUser.stats.longestStreak,
-                currentUser.stats.currentStreak
-            );
-            
-            // Update level
-            const xpGained = score;
-            currentUser.stats.xp += xpGained;
-            currentUser.stats.level = Math.floor(currentUser.stats.xp / 100) + 1;
-            
-            // Save to localStorage
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Update users array
-            const users = JSON.parse(localStorage.getItem('users'));
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex !== -1) {
-                users[userIndex] = currentUser;
-                localStorage.setItem('users', JSON.stringify(users));
-            }
-            
-            // Show results
-            document.getElementById('quiz-content').style.display = 'none';
-            document.getElementById('results-content').style.display = 'block';
-            document.getElementById('results-content').innerHTML = `
-                <div class="results-card">
-                    <h2>Quiz Complete! 🎉</h2>
-                    <div class="score-display">${score}</div>
-                    <p style="font-size: 1.2em; color: #666;">Total Score</p>
-                    
-                    <div class="results-stats">
-                        <div class="result-stat">
-                            <div class="result-stat-value">${correctAnswers}/${totalQuestions}</div>
-                            <div class="result-stat-label">Correct Answers</div>
-                        </div>
-                        <div class="result-stat">
-                            <div class="result-stat-value">${Math.round((correctAnswers/totalQuestions)*100)}%</div>
-                            <div class="result-stat-label">Accuracy</div>
-                        </div>
-                        <div class="result-stat">
-                            <div class="result-stat-value">+${xpGained}</div>
-                            <div class="result-stat-label">XP Gained</div>
-                        </div>
-                    </div>
-                    
-                    ${newBadges.length > 0 ? `
-                    <div class="badges-earned">
-                        <h3>New Badges Earned!</h3>
-                        <div class="badge-list">
-                            ${newBadges.map(b => `<span class="badge-item">${b}</span>`).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
-                    
-                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
-                        <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-                        <button class="btn btn-secondary" onclick="window.location.reload()">Retry Quiz</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function exitQuiz() {
-            if (confirm('Are you sure you want to exit? Your progress will be lost.')) {
-                window.location.href = 'dashboard.html';
-            }
-        }
-    </script>
-</body>
-</html>
+            current
