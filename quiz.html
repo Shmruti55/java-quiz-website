@@ -770,6 +770,22 @@
             const xpGained = score;
             currentUser.stats.xp += xpGained;
             currentUser.stats.level = Math.floor(currentUser.stats.xp / 100) + 1;
+
+            // Save quiz to history
+if (!currentUser.quizHistory) {
+    currentUser.quizHistory = [];
+}
+
+currentUser.quizHistory.push({
+    moduleId: selectedModule,
+    score: score,
+    correctAnswers: correctAnswers,
+    totalQuestions: totalQuestions,
+    date: new Date().toISOString(),
+    xpGained: score,
+    badgesEarned: newBadges,
+    difficulty: difficulty
+});
             
             // Save to localStorage
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -830,4 +846,5 @@
         }
     </script>
 </body>
+
 </html>
