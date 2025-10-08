@@ -372,4 +372,114 @@
 
         // Remove after duration
         setTimeout(() => {
-            toast.style.animation = 'fadeInUp 0.3s ease
+            toast.style.animation = 'fadeInUp 0.3s ease-out reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+
+    function injectToastStyles() {
+        if (document.getElementById('toast-styles')) return;
+
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+            .toast {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                font-weight: 600;
+                max-width: 300px;
+            }
+
+            .toast-success {
+                background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                color: white;
+            }
+
+            .toast-error {
+                background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+                color: white;
+            }
+
+            .toast-warning {
+                background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+                color: white;
+            }
+
+            .toast-info {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            @media (max-width: 768px) {
+                .toast {
+                    right: 10px;
+                    left: 10px;
+                    max-width: none;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // =============================================================================
+    // INITIALIZE ALL ANIMATIONS
+    // =============================================================================
+    
+    function init() {
+        // Inject styles
+        injectRippleStyles();
+        injectConfettiStyles();
+        injectToastStyles();
+
+        // Initialize animations
+        initScrollAnimations();
+        autoApplyAnimations();
+        initNavbarScrollEffect();
+
+        // Animate on load
+        setTimeout(() => {
+            animateCounters();
+            animateProgressBars();
+        }, 300);
+    }
+
+    // =============================================================================
+    // EXPOSE PUBLIC API
+    // =============================================================================
+    
+    window.animations = {
+        shake: addShakeEffect,
+        confetti: createConfetti,
+        toast: showToast,
+        showLoader: showLoader,
+        hideLoader: hideLoader,
+        animateCounters: animateCounters,
+        animateProgressBars: animateProgressBars
+    };
+
+    // =============================================================================
+    // AUTO-INITIALIZE WHEN DOM IS READY
+    // =============================================================================
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
+    
+        
+   
+
+        
+           
+        
+        
+                
