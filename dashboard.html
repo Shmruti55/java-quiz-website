@@ -876,4 +876,406 @@
             ],
             3: [
                 {question: "What does JDBC stand for?", options: ["Java Database Connectivity", "Java Data Bridge Connection", "Java Dynamic Base Connection", "Java Database Connection"], correct: 0},
-                {question: "Which package contains JDBC classes?", options: ["java.jdbc",
+                {question: "Which package contains JDBC classes?", options: ["java.sql", "java.jdbc", "java.io", "java.util"], correct: 0}, // Completed missing option
+                {question: "Which JDBC driver uses a network protocol to communicate with the database server?", options: ["Type 1 (JDBC-ODBC Bridge)", "Type 2 (Native API)", "Type 3 (Network Protocol)", "Type 4 (Thin Driver)"], correct: 2},
+                {question: "Which method is used to execute a static SQL statement in JDBC?", options: ["executeUpdate()", "executeSelect()", "executeQuery()", "executeBatch()"], correct: 2},
+                {question: "Which method is used to commit changes to the database?", options: ["save()", "commit()", "send()", "update()"], correct: 1},
+                {question: "What is the default isolation level in JDBC?", options: ["TRANSACTION_READ_UNCOMMITTED", "TRANSACTION_READ_COMMITTED", "TRANSACTION_REPEATABLE_READ", "TRANSACTION_SERIALIZABLE"], correct: 1},
+                {question: "Which driver converts JDBC calls directly into the vendor-specific database protocol?", options: ["Type 1", "Type 2", "Type 3", "Type 4"], correct: 3},
+                {question: "A client-side program is typically executed on the:", options: ["Server", "User's browser/computer", "Database", "Firewall"], correct: 1},
+                {question: "The main purpose of a server-side program is:", options: ["UI rendering", "Client data validation", "Data storage and processing", "Local file management"], correct: 2},
+                {question: "Which interface is used to interact with the database in JDBC?", options: ["Driver", "Connection", "Statement", "ResultSet"], correct: 1}
+            ]
+            // Modules 4, 5, 6 would continue here with 10 questions each for a complete quiz pool
+        };
+        // --- END QUIZ DATA ---
+        
+        // --- GLOBAL STATE ---
+        const ELEMENTS = {
+            setup: document.getElementById('setupContainer'),
+            quiz: document.getElementById('quizContainer'),
+            results: document.getElementById('resultsContainer'),
+            teamNameInput: document.getElementById('teamName'),
+            moduleSelect: document.getElementById('moduleSelect'),
+            numQuestionsSelect: document.getElementById('numQuestions'),
+            timePerQuestionSelect: document.getElementById('timePerQuestion'),
+            teamMembersDiv: document.getElementById('teamMembers'),
+            addMemberBtn: document.getElementById('addMemberBtn'),
+            startQuizBtn: document.getElementById('startQuizBtn'),
+            // Quiz elements
+            teamNameDisplay: document.getElementById('teamNameDisplay'),
+            teamScoreValue: document.getElementById('teamScoreValue'),
+            memberList: document.getElementById('memberList'),
+            questionNumber: document.getElementById('questionNumber'),
+            timerValue: document.getElementById('timerValue'),
+            turnAvatar: document.getElementById('turnAvatar'),
+            currentPlayerName: document.getElementById('currentPlayerName'),
+            questionText: document.getElementById('questionText'),
+            optionsGrid: document.getElementById('optionsGrid'),
+            skipBtn: document.getElementById('skipBtn'),
+            submitBtn: document.getElementById('submitBtn'),
+            chatInput: document.getElementById('chatInput'),
+            sendChatBtn: document.getElementById('sendChatBtn'),
+            chatMessages: document.getElementById('chatMessages'),
+            // Results elements
+            finalScore: document.getElementById('finalScore'),
+            correctAnswersDisplay: document.getElementById('correctAnswers'),
+            accuracyDisplay: document.getElementById('accuracy'),
+            avgTimeDisplay: document.getElementById('avgTime'),
+            performanceList: document.getElementById('performanceList')
+        };
+
+        let team = [];
+        let quizState = {};
+        let timerInterval;
+        let selectedOption = null;
+
+        // --- SETUP LOGIC ---
+
+        function addMemberInput(name = '', removable = true) {
+            const memberCount = ELEMENTS.teamMembersDiv.children.length;
+            if (memberCount >= 4) {
+                ELEMENTS.addMemberBtn.disabled = true;
+                return;
+            }
+
+            const memberInputDiv = document.createElement('div');
+            memberInputDiv.className = 'member-input';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Member ${memberCount + 1} Name`;
+            input.className = 'member-name';
+            input.value = name;
+            input.required = true;
+            memberInputDiv.appendChild(input);
+
+            if (removable) {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-member';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.onclick = () => removeMemberInput(memberInputDiv);
+                memberInputDiv.appendChild(removeBtn);
+            }
+
+            ELEMENTS.teamMembersDiv.appendChild(memberInputDiv);
+            if (memberCount + 1 >= 4) {
+                ELEMENTS.addMemberBtn.disabled = true;
+            }
+        }
+
+        function removeMemberInput(element) {
+            const memberCount = ELEMENTS.teamMembersDiv.children.length;
+            if (memberCount > 3) {
+                ELEMENTS.teamMembersDiv.removeChild(element);
+                ELEMENTS.addMemberBtn.disabled = false;
+            } else {
+                alert("A team must have at least 3 members.");
+            }
+        }
+
+        // Initialize with default 3 members and set event listener
+        ELEMENTS.teamMembersDiv.innerHTML = ''; // Clear initial placeholders
+        addMemberInput("Alice", false);
+        addMemberInput("Bob", true);
+        addMemberInput("Charlie", true);
+        ELEMENTS.addMemberBtn.addEventListener('click', () => addMemberInput('', true));
+        
+        // --- QUIZ GAME ENGINE ---
+
+        function startGame() {
+            const teamName = ELEMENTS.teamNameInput.value.trim();
+            const moduleKey = ELEMENTS.moduleSelect.value;
+            const numQuestions = parseInt(ELEMENTS.numQuestionsSelect.value);
+            const timePerQuestion = parseInt(ELEMENTS.timePerQuestionSelect.value);
+
+            const memberInputs = Array.from(document.querySelectorAll('#teamMembers .member-name'));
+            const memberNames = memberInputs.map(input => input.value.trim()).filter(name => name);
+            
+            if (!teamName || memberNames.length < 3) {
+                alert("Please enter a team name and ensure there are at least 3 members.");
+                return;
+            }
+
+            if (memberNames.length > 4) {
+                 alert("A team can have a maximum of 4 members.");
+                return;
+            }
+
+            // 1. Initialize Team
+            team = memberNames.map(name => ({
+                name: name,
+                initial: name.charAt(0).toUpperCase(),
+                score: 0,
+                correct: 0,
+                wrong: 0,
+                timeSpent: 0
+            }));
+
+            // 2. Initialize Quiz State
+            const moduleQuestions = quizData[moduleKey];
+            if (!moduleQuestions || moduleQuestions.length < numQuestions) {
+                alert("Not enough questions available for this module/question count. Please try another selection.");
+                return;
+            }
+
+            // Shuffle and select questions
+            const shuffledQuestions = moduleQuestions.sort(() => 0.5 - Math.random());
+            const questions = shuffledQuestions.slice(0, numQuestions).map(q => ({
+                ...q,
+                options: q.options.sort(() => 0.5 - Math.random()) // Shuffle options too
+            }));
+
+            quizState = {
+                teamName: teamName,
+                questions: questions,
+                currentQIndex: 0,
+                currentPlayerIndex: 0,
+                maxScore: numQuestions * 10,
+                totalTimePerQ: timePerQuestion,
+                totalTimeElapsed: 0,
+                totalCorrect: 0,
+                totalAnswered: 0
+            };
+
+            // 3. Switch UI
+            ELEMENTS.setup.style.display = 'none';
+            ELEMENTS.results.style.display = 'none';
+            ELEMENTS.quiz.classList.add('active');
+
+            // 4. Update Panel and Start Quiz
+            updateTeamPanel();
+            loadQuestion();
+        }
+
+        function updateTeamPanel() {
+            ELEMENTS.teamNameDisplay.textContent = quizState.teamName;
+            ELEMENTS.teamScoreValue.textContent = quizState.totalCorrect * 10;
+            
+            ELEMENTS.memberList.innerHTML = '';
+            team.forEach((member, index) => {
+                const isActive = index === quizState.currentPlayerIndex;
+                const memberCard = document.createElement('div');
+                memberCard.className = `member-card ${isActive ? 'active' : ''}`;
+                memberCard.innerHTML = `
+                    <div class="member-avatar">${member.initial}</div>
+                    <div class="member-info">
+                        <div class="member-name">${member.name}</div>
+                        <div class="member-status">Score: ${member.score} (${member.correct} Correct)</div>
+                    </div>
+                `;
+                ELEMENTS.memberList.appendChild(memberCard);
+            });
+
+            const currentPlayer = team[quizState.currentPlayerIndex];
+            ELEMENTS.turnAvatar.textContent = currentPlayer.initial;
+            ELEMENTS.currentPlayerName.textContent = currentPlayer.name;
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            selectedOption = null;
+
+            if (quizState.currentQIndex >= quizState.questions.length) {
+                showResults();
+                return;
+            }
+
+            const currentQ = quizState.questions[quizState.currentQIndex];
+
+            // Update UI for new question
+            ELEMENTS.questionNumber.textContent = `Question ${quizState.currentQIndex + 1} of ${quizState.questions.length}`;
+            ELEMENTS.questionText.textContent = currentQ.question;
+            ELEMENTS.optionsGrid.innerHTML = '';
+            ELEMENTS.submitBtn.disabled = true;
+            ELEMENTS.skipBtn.disabled = false;
+
+            // Render options
+            currentQ.options.forEach((optionText, index) => {
+                const optionBtn = document.createElement('button');
+                optionBtn.className = 'option-btn';
+                optionBtn.textContent = optionText;
+                optionBtn.setAttribute('data-index', index);
+                optionBtn.onclick = () => selectOption(optionBtn, index);
+                ELEMENTS.optionsGrid.appendChild(optionBtn);
+            });
+
+            // Reset chat/discussion
+            ELEMENTS.chatMessages.innerHTML = `
+                <div class="chat-message">
+                    <div class="chat-author">System</div>
+                    <div class="chat-text">Discuss with your team before answering!</div>
+                </div>
+            `;
+            
+            startTimer();
+            updateTeamPanel();
+        }
+
+        function selectOption(button, index) {
+            if (ELEMENTS.submitBtn.disabled) return;
+            
+            Array.from(ELEMENTS.optionsGrid.children).forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            selectedOption = index;
+            ELEMENTS.submitBtn.disabled = false;
+        }
+
+        function startTimer() {
+            let timeLeft = quizState.totalTimePerQ;
+            ELEMENTS.timerValue.textContent = timeLeft;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                ELEMENTS.timerValue.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswer(true); // Submit with no answer if time runs out
+                }
+            }, 1000);
+        }
+        
+        function getOptionButton(index) {
+             return Array.from(ELEMENTS.optionsGrid.children).find(btn => parseInt(btn.getAttribute('data-index')) === index);
+        }
+
+        function submitAnswer(timedOut = false) {
+            clearInterval(timerInterval);
+            ELEMENTS.submitBtn.disabled = true;
+            ELEMENTS.skipBtn.disabled = true;
+            const timeTaken = quizState.totalTimePerQ - parseInt(ELEMENTS.timerValue.textContent);
+            const currentQ = quizState.questions[quizState.currentQIndex];
+            const currentPlayer = team[quizState.currentPlayerIndex];
+            const correctOptionIndex = currentQ.correct;
+
+            let isCorrect = false;
+            let scoreEarned = 0;
+            
+            // Highlight all options and disable clicks
+            Array.from(ELEMENTS.optionsGrid.children).forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            const correctButton = getOptionButton(correctOptionIndex);
+            
+            if (timedOut) {
+                // Time out: 0 points, mark correct option
+                isCorrect = false;
+                scoreEarned = 0;
+                correctButton.classList.add('correct');
+            } else if (selectedOption !== null) {
+                const selectedButton = getOptionButton(selectedOption);
+                
+                if (selectedOption === correctOptionIndex) {
+                    // Correct answer
+                    isCorrect = true;
+                    scoreEarned = 10;
+                    selectedButton.classList.add('correct');
+                    quizState.totalCorrect++;
+                    currentPlayer.correct++;
+                } else {
+                    // Wrong answer
+                    isCorrect = false;
+                    scoreEarned = 0;
+                    selectedButton.classList.add('wrong');
+                    correctButton.classList.add('correct');
+                    currentPlayer.wrong++;
+                }
+                quizState.totalAnswered++;
+            } else {
+                // Skipped (no selection made by button or timer)
+                correctButton.classList.add('correct');
+            }
+
+            // Update Global/Player Stats
+            currentPlayer.score += scoreEarned;
+            currentPlayer.timeSpent += timeTaken;
+            quizState.totalTimeElapsed += timeTaken;
+            
+            // Show result temporarily and move to next question/turn
+            setTimeout(() => {
+                nextTurn();
+            }, 2000); // 2 second delay to show the result
+        }
+
+        function nextTurn() {
+            // Move to next player
+            quizState.currentPlayerIndex = (quizState.currentPlayerIndex + 1) % team.length;
+            
+            // If the turn has cycled back to the first player, move to the next question
+            if (quizState.currentPlayerIndex === 0) {
+                quizState.currentQIndex++;
+            }
+            
+            loadQuestion();
+        }
+
+        function showResults() {
+            ELEMENTS.quiz.classList.remove('active');
+            ELEMENTS.results.classList.add('active');
+            
+            const totalQuestions = quizState.questions.length;
+            const finalTeamScore = quizState.totalCorrect * 10;
+            
+            // Final Score & Stats
+            ELEMENTS.finalScore.textContent = `${finalTeamScore} / ${quizState.maxScore}`;
+            ELEMENTS.correctAnswersDisplay.textContent = quizState.totalCorrect;
+            ELEMENTS.accuracyDisplay.textContent = `${(quizState.totalCorrect / totalQuestions * 100).toFixed(1)}%`;
+            ELEMENTS.avgTimeDisplay.textContent = `${(quizState.totalTimeElapsed / totalQuestions).toFixed(1)}s`;
+            
+            // Team Performance
+            team.sort((a, b) => b.score - a.score); // Sort by score
+            ELEMENTS.performanceList.innerHTML = '';
+
+            team.forEach(member => {
+                const item = document.createElement('div');
+                item.className = 'performance-item';
+                item.innerHTML = `
+                    <div class="perf-avatar">${member.initial}</div>
+                    <div class="perf-details">
+                        <div class="perf-name">${member.name}</div>
+                        <div class="perf-stats">${member.correct} Correct, ${member.wrong} Wrong. Avg Time: ${(member.timeSpent / (member.correct + member.wrong || 1)).toFixed(1)}s</div>
+                    </div>
+                    <div class="perf-score">${member.score} pts</div>
+                `;
+                ELEMENTS.performanceList.appendChild(item);
+            });
+        }
+        
+        // --- CHAT LOGIC (Simulated) ---
+
+        function appendChatMessage(author, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            messageDiv.innerHTML = `
+                <div class="chat-author">${author}</div>
+                <div class="chat-text">${message}</div>
+            `;
+            ELEMENTS.chatMessages.appendChild(messageDiv);
+            ELEMENTS.chatMessages.scrollTop = ELEMENTS.chatMessages.scrollHeight; // Auto-scroll
+        }
+        
+        function handleChatSend() {
+            const message = ELEMENTS.chatInput.value.trim();
+            if (message) {
+                const currentPlayer = team[quizState.currentPlayerIndex];
+                appendChatMessage(currentPlayer.name, message);
+                ELEMENTS.chatInput.value = '';
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        ELEMENTS.startQuizBtn.addEventListener('click', startGame);
+        ELEMENTS.submitBtn.addEventListener('click', () => submitAnswer(false));
+        ELEMENTS.skipBtn.addEventListener('click', () => submitAnswer(false)); // Submitting without selection is considered a skip/fail
+        ELEMENTS.sendChatBtn.addEventListener('click', handleChatSend);
+        ELEMENTS.chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleChatSend();
+            }
+        });
+
+    </script>
+</body>
+</html>
