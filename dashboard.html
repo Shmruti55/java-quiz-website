@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Quiz Mode - Java Quiz</title>
+    <title>Dashboard - Java Quiz Master</title>
     <style>
         * {
             margin: 0;
@@ -13,1269 +13,789 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
             min-height: 100vh;
-            padding: 20px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
         }
 
         .container {
             max-width: 1400px;
-            margin: 0 auto;
+            margin: 30px auto;
+            padding: 0 20px;
         }
 
-        .header {
+        .welcome-section {
             background: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            color: #764ba2;
-            font-size: 28px;
-        }
-
-        .back-btn {
-            padding: 10px 20px;
-            background: #f0f0f0;
-            color: #333;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .back-btn:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-
-        .setup-container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .setup-container h2 {
-            color: #764ba2;
-            font-size: 24px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .team-members {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .member-input {
-            position: relative;
-        }
-
-        .member-input input {
-            padding-right: 40px;
-        }
-
-        .remove-member {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #ff4757;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            line-height: 1;
-        }
-
-        .add-member-btn {
-            padding: 12px 24px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-
-        .add-member-btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-        }
-
-        .start-quiz-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: all 0.3s;
-        }
-
-        .start-quiz-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4);
-        }
-
-        .quiz-container {
-            display: none;
-        }
-
-        .quiz-container.active {
-            display: block;
-        }
-
-        .quiz-layout {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 30px;
-        }
-
-        .team-panel {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            height: fit-content;
-            position: sticky;
-            top: 20px;
-        }
-
-        .team-panel h3 {
-            color: #764ba2;
-            margin-bottom: 20px;
-            font-size: 20px;
-        }
-
-        .team-score {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .team-score .score-label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .team-score .score-value {
-            font-size: 36px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .member-list {
-            margin-top: 20px;
-        }
-
-        .member-card {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .member-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .member-info {
-            flex: 1;
-        }
-
-        .member-name {
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .member-status {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .member-card.active {
-            border: 2px solid #667eea;
-            background: #e8eaf6;
-        }
-
-        .question-card {
-            background: white;
-            padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .question-number {
-            font-size: 18px;
-            color: #666;
-            font-weight: 600;
-        }
-
-        .timer {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #fff3e0;
-            padding: 10px 20px;
-            border-radius: 8px;
-        }
-
-        .timer-icon {
-            font-size: 20px;
-        }
-
-        .timer-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #f57c00;
-        }
-
-        .current-turn {
-            background: #e8f5e9;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .turn-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2ed573 0%, #26de81 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        .turn-info h4 {
-            color: #2ed573;
-            font-size: 14px;
-            margin-bottom: 3px;
-        }
-
-        .turn-info p {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .question-text {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .option-btn {
-            padding: 20px;
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-            font-size: 16px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .option-btn:hover {
-            background: #e8eaf6;
-            border-color: #667eea;
-            transform: translateY(-2px);
-        }
-
-        .option-btn.selected {
-            background: #e8eaf6;
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .option-btn.correct {
-            background: #e8f5e9;
-            border-color: #2ed573;
-            color: #2ed573;
-        }
-
-        .option-btn.wrong {
-            background: #ffebee;
-            border-color: #ff4757;
-            color: #ff4757;
-        }
-
-        .option-btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .quiz-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .discussion-panel {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .discussion-header {
-            font-weight: 600;
-            color: #764ba2;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .chat-message {
-            background: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .chat-author {
-            font-weight: 600;
-            color: #667eea;
-            font-size: 13px;
-            margin-bottom: 3px;
-        }
-
-        .chat-text {
-            color: #333;
-            font-size: 14px;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .send-btn {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .results-container {
-            display: none;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            max-width: 900px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .results-container.active {
-            display: block;
-        }
-
-        .results-header {
-            margin-bottom: 40px;
-        }
-
-        .results-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .results-title {
-            font-size: 32px;
-            color: #764ba2;
-            margin-bottom: 10px;
-        }
-
-        .results-subtitle {
-            font-size: 18px;
-            color: #666;
-        }
-
-        .final-score {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             padding: 30px;
             border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 30px;
         }
 
-        .final-score .label {
-            font-size: 18px;
-            opacity: 0.9;
+        .welcome-section h1 {
+            color: #333;
             margin-bottom: 10px;
         }
 
-        .final-score .value {
-            font-size: 56px;
-            font-weight: bold;
+        .welcome-section p {
+            color: #666;
+            font-size: 1.1em;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
 
-        .stat-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
         }
 
-        .stat-box .stat-value {
-            font-size: 36px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
 
-        .stat-box .stat-label {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .team-performance {
-            margin-bottom: 30px;
-        }
-
-        .team-performance h3 {
-            color: #764ba2;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-
-        .performance-list {
-            display: grid;
-            gap: 15px;
-        }
-
-        .performance-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+        .stat-card-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 20px;
+            margin-bottom: 15px;
         }
 
-        .perf-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2em;
             font-weight: bold;
-            font-size: 24px;
+            color: #333;
         }
 
-        .perf-details {
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        /* --- NEW CSS ADDITIONS --- */
+
+        /* Certificate Banner Styles */
+        .certificate-banner {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            margin-bottom: 30px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cert-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .cert-banner-icon {
+            font-size: 60px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .cert-banner-text {
             flex: 1;
-            text-align: left;
+            min-width: 250px;
         }
 
-        .perf-name {
-            font-size: 18px;
+        .cert-banner-text h3 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .cert-banner-text p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .btn-certificate {
+            background: white;
+            color: #ffd700;
+            padding: 14px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            display: inline-block;
+            border: 2px solid #ffd700;
+        }
+
+        .btn-certificate:hover {
+            background: #ffd700;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* Team Quiz Card Styles */
+        .team-quiz-card {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .team-quiz-card h3 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+
+        .team-quiz-card p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .btn-team-quiz {
+            background: white;
+            color: #764ba2;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-team-quiz:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+        /* End Team Quiz Card Styles */
+        
+        /* --- END NEW CSS ADDITIONS --- */
+
+
+        .modules-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .module-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .module-number {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .module-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-new {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-progress {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-completed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .module-title {
+            font-size: 1.1em;
             font-weight: 600;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
-        .perf-stats {
-            font-size: 14px;
+        .module-description {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .module-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85em;
             color: #666;
         }
 
-        .perf-score {
-            font-size: 28px;
+        .start-quiz-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .start-quiz-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .leaderboard-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #333; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #e8a87c); color: white; }
+        .rank-other { background: #e0e0e0; color: #666; }
+
+        .leaderboard-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .leaderboard-score {
             font-weight: bold;
             color: #667eea;
+            font-size: 1.1em;
         }
 
-        .results-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        @media (max-width: 968px) {
-            .quiz-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .team-panel {
-                position: static;
-            }
-
-            .options-grid {
-                grid-template-columns: 1fr;
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
             }
 
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @media (max-width: 600px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .setup-container {
-                padding: 25px;
-            }
-
-            .team-members {
+            .modules-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .cert-banner-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .btn-certificate {
+                width: 100%;
             }
         }
     </style>
+    <link rel="stylesheet" href="animations.css"> 
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-brand">🎓 Java Quiz Master</div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar"></div>
+                <span id="username-display"></span>
+                <a href="#" class="nav-link" id="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
-        <div class="header">
-            <h1>🤝 Team Quiz Mode</h1>
-            <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+        <div class="welcome-section">
+            <h1>Welcome back, <span id="welcome-name"></span>! 👋</h1>
+            <p>Ready to continue your Java learning journey? Pick up where you left off!</p>
         </div>
 
-        <div class="setup-container" id="setupContainer">
-            <h2>Create Your Team Quiz</h2>
-            
-            <div class="form-group">
-                <label>Team Name</label>
-                <input type="text" id="teamName" placeholder="Enter your team name" required>
-            </div>
-
-            <div class="form-group">
-                <label>Select Module</label>
-                <select id="moduleSelect">
-                    <option value="0">Module 0: Prerequisites</option>
-                    <option value="1">Module I: Introduction to OOP in Java</option>
-                    <option value="2">Module II: Inheritance & Exception Handling</option>
-                    <option value="3">Module III: Client and Server Side Programming</option>
-                    <option value="4">Module IV: Fundamentals of Java Script</option>
-                    <option value="5">Module V: Web Programming using React</option>
-                    <option value="6">Module VI: Application of Spring Framework</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Number of Questions</label>
-                <select id="numQuestions">
-                    <option value="5">5 Questions</option>
-                    <option value="10" selected>10 Questions</option>
-                    <option value="15">15 Questions</option>
-                    <option value="20">20 Questions</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Time per Question (seconds)</label>
-                <select id="timePerQuestion">
-                    <option value="30">30 seconds</option>
-                    <option value="45" selected>45 seconds</option>
-                    <option value="60">60 seconds</option>
-                    <option value="90">90 seconds</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Team Members (3-4 players)</label>
-                <div class="team-members" id="teamMembers">
-                    <div class="member-input">
-                        <input type="text" placeholder="Member 1 Name" class="member-name" required>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-value" id="level-display">1</div>
+                        <div class="stat-label">Current Level</div>
                     </div>
-                    <div class="member-input">
-                        <input type="text" placeholder="Member 2 Name" class="member-name" required>
-                    </div>
-                    <div class="member-input">
-                        <input type="text" placeholder="Member 3 Name" class="member-name" required>
-                    </div>
+                    <div class="stat-icon purple">🎯</div>
                 </div>
-                <button class="add-member-btn" id="addMemberBtn">+ Add Member</button>
             </div>
 
-            <button class="start-quiz-btn" id="startQuizBtn">Start Team Quiz</button>
-        </div>
-
-        <div class="quiz-container" id="quizContainer">
-            <div class="quiz-layout">
-                <div class="team-panel">
-                    <h3 id="teamNameDisplay">Team Name</h3>
-                    
-                    <div class="team-score">
-                        <div class="score-label">Team Score</div>
-                        <div class="score-value" id="teamScoreValue">0</div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-value" id="streak-display">0</div>
+                        <div class="stat-label">Day Streak 🔥</div>
                     </div>
-
-                    <div class="member-list" id="memberList"></div>
+                    <div class="stat-icon orange">📊</div>
                 </div>
+            </div>
 
-                <div class="question-card">
-                    <div class="quiz-header">
-                        <div class="question-number" id="questionNumber">Question 1 of 10</div>
-                        <div class="timer">
-                            <span class="timer-icon">⏱️</span>
-                            <span class="timer-value" id="timerValue">45</span>
-                        </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-value" id="quizzes-display">0</div>
+                        <div class="stat-label">Quizzes Completed</div>
                     </div>
+                    <div class="stat-icon green">✅</div>
+                </div>
+            </div>
 
-                    <div class="current-turn" id="currentTurn">
-                        <div class="turn-avatar">A</div>
-                        <div class="turn-info">
-                            <h4>CURRENT TURN</h4>
-                            <p id="currentPlayerName">Player Name</p>
-                        </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-value" id="badges-display">0</div>
+                        <div class="stat-label">Badges Earned</div>
                     </div>
-
-                    <div class="question-text" id="questionText">
-                        Loading question...
-                    </div>
-
-                    <div class="options-grid" id="optionsGrid"></div>
-
-                    <div class="quiz-actions">
-                        <button class="btn btn-secondary" id="skipBtn">Skip Question</button>
-                        <button class="btn btn-primary" id="submitBtn" disabled>Submit Answer</button>
-                    </div>
-
-                    <div class="discussion-panel">
-                        <div class="discussion-header">💬 Team Discussion</div>
-                        <div id="chatMessages">
-                            <div class="chat-message">
-                                <div class="chat-author">System</div>
-                                <div class="chat-text">Discuss with your team before answering!</div>
-                            </div>
-                        </div>
-                        <div class="chat-input-area">
-                            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
-                            <button class="send-btn" id="sendChatBtn">Send</button>
-                        </div>
-                    </div>
+                    <div class="stat-icon blue">🏆</div>
                 </div>
             </div>
         </div>
-
-        <div class="results-container" id="resultsContainer">
-            <div class="results-header">
-                <div class="results-icon">🏆</div>
-                <h2 class="results-title">Quiz Completed!</h2>
-                <p class="results-subtitle">Great teamwork!</p>
+        
+        <div class="certificate-banner" id="certificateBanner" style="display: none;">
+        	<div class="cert-banner-content">
+        		<div class="cert-banner-icon">🏆</div>
+        		<div class="cert-banner-text">
+        			<h3>Congratulations! You've completed all modules!</h3>
+        			<p>Your certificate of achievement is ready to download</p>
+        		</div>
+        		<a href="certificate.html" class="btn-certificate">View Certificate</a>
+        	</div>
+        </div>
+        
+        <div class="team-quiz-card">
+            <h3>🤝 Team Quiz Mode</h3>
+            <p>Challenge yourself with 3-4 teammates!</p>
+            <a href="team-quiz.html" class="btn-team-quiz">Start Team Quiz</a>
+        </div>
+        <div class="modules-section">
+            <div class="section-header">
+                <h2>Course Modules</h2>
             </div>
+            <div class="modules-grid" id="modules-container"></div>
+        </div>
 
-            <div class="final-score">
-                <div class="label">Final Team Score</div>
-                <div class="value" id="finalScore">0 / 0</div>
+        <div class="leaderboard-section">
+            <div class="section-header">
+                <h2>Top Performers 🏆</h2>
             </div>
-
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-value" id="correctAnswers">0</div>
-                    <div class="stat-label">Correct Answers</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="accuracy">0%</div>
-                    <div class="stat-label">Accuracy</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="avgTime">0s</div>
-                    <div class="stat-label">Avg Time/Question</div>
-                </div>
-            </div>
-
-            <div class="team-performance">
-                <h3>Team Performance</h3>
-                <div class="performance-list" id="performanceList"></div>
-            </div>
-
-            <div class="results-actions">
-                <button class="btn btn-secondary" onclick="location.href='dashboard.html'">Back to Dashboard</button>
-                <button class="btn btn-primary" onclick="location.reload()">New Team Quiz</button>
-            </div>
+            <ul class="leaderboard-list" id="leaderboard-preview"></ul>
         </div>
     </div>
 
     <script>
-        const quizData = {
-            0: [
-                {question: "What is a variable?", options: ["A storage location", "A function", "A loop", "A class"], correct: 0},
-                {question: "Which is a data type?", options: ["for", "if", "int", "while"], correct: 2},
-                {question: "What does OOP stand for?", options: ["Object Oriented Programming", "Operator Over Programming", "Optional Object Placement", "Ordered Output Process"], correct: 0},
-                {question: "What is encapsulation?", options: ["Hiding data", "Looping", "Recursion", "Sorting"], correct: 0},
-                {question: "What is inheritance?", options: ["Acquiring properties", "Data hiding", "Method calling", "Loop execution"], correct: 0},
-                {question: "What is polymorphism?", options: ["Many forms", "One form", "No forms", "Two forms"], correct: 0},
-                {question: "What is an array?", options: ["Collection of elements", "A function", "A variable", "A class"], correct: 0},
-                {question: "What is a loop?", options: ["Repeated execution", "One-time execution", "No execution", "Random execution"], correct: 0},
-                {question: "What is a function?", options: ["Reusable code block", "Variable", "Data type", "Loop"], correct: 0},
-                {question: "What is a class?", options: ["Blueprint for objects", "A variable", "A loop", "A function"], correct: 0}
-            ],
-            1: [
-                {question: "What is the correct syntax to output 'Hello World' in Java?", options: ["echo('Hello World');", "System.out.println('Hello World');", "Console.WriteLine('Hello World');", "print('Hello World');"], correct: 1},
-                {question: "Which keyword is used to create a variable in Java?", options: ["var", "let", "int, String, etc.", "variable"], correct: 2},
-                {question: "What is the size of int in Java?", options: ["8 bits", "16 bits", "32 bits", "64 bits"], correct: 2},
-                {question: "Which method is the entry point of a Java program?", options: ["start()", "main()", "run()", "execute()"], correct: 1},
-                {question: "What is the default value of a boolean variable in Java?", options: ["true", "false", "null", "0"], correct: 1},
-                {question: "Which operator is used for string concatenation in Java?", options: ["&", "+", ".", "||"], correct: 1},
-                {question: "What is the correct way to declare an array in Java?", options: ["int arr[];", "array int arr;", "int[] arr;", "Both A and C"], correct: 3},
-                {question: "Which keyword is used to prevent inheritance in Java?", options: ["static", "final", "private", "sealed"], correct: 1},
-                {question: "What does JVM stand for?", options: ["Java Virtual Machine", "Java Variable Method", "Java Verified Machine", "Java Value Machine"], correct: 0},
-                {question: "Which package is imported by default in Java?", options: ["java.util", "java.io", "java.lang", "java.net"], correct: 2}
-            ],
-            2: [
-                {question: "What is encapsulation in OOP?", options: ["Hiding implementation details", "Inheriting properties", "Multiple forms", "Creating objects"], correct: 0},
-                {question: "Which keyword is used to inherit a class in Java?", options: ["implements", "inherits", "extends", "super"], correct: 2},
-                {question: "What is a constructor in Java?", options: ["A method to destroy objects", "A special method to initialize objects", "A method to copy objects", "A static method"], correct: 1},
-                {question: "Can we overload the main method in Java?", options: ["Yes", "No", "Only in abstract classes", "Only with different return types"], correct: 0},
-                {question: "What is method overriding?", options: ["Same method name, different parameters", "Same method signature in subclass", "Multiple methods with same name", "None of the above"], correct: 1},
-                {question: "Which access modifier is most restrictive?", options: ["public", "protected", "default", "private"], correct: 3},
-                {question: "What is the 'this' keyword used for?", options: ["To refer to current object", "To call parent class", "To create new object", "To import classes"], correct: 0},
-                {question: "Can an abstract class have a constructor?", options: ["Yes", "No", "Only if it's public", "Only if it's private"], correct: 0},
-                {question: "What is polymorphism?", options: ["One form", "Two forms", "Many forms", "No forms"], correct: 2},
-                {question: "Which keyword is used to prevent method overriding?", options: ["static", "final", "abstract", "private"], correct: 1}
-            ],
-            3: [
-                {question: "What does JDBC stand for?", options: ["Java Database Connectivity", "Java Data Bridge Connection", "Java Dynamic Base Connection", "Java Database Connection"], correct: 0},
-                {question: "Which package contains JDBC classes?", options: ["java.sql", "java.jdbc", "java.io", "java.util"], correct: 0}, // Completed missing option
-                {question: "Which JDBC driver uses a network protocol to communicate with the database server?", options: ["Type 1 (JDBC-ODBC Bridge)", "Type 2 (Native API)", "Type 3 (Network Protocol)", "Type 4 (Thin Driver)"], correct: 2},
-                {question: "Which method is used to execute a static SQL statement in JDBC?", options: ["executeUpdate()", "executeSelect()", "executeQuery()", "executeBatch()"], correct: 2},
-                {question: "Which method is used to commit changes to the database?", options: ["save()", "commit()", "send()", "update()"], correct: 1},
-                {question: "What is the default isolation level in JDBC?", options: ["TRANSACTION_READ_UNCOMMITTED", "TRANSACTION_READ_COMMITTED", "TRANSACTION_REPEATABLE_READ", "TRANSACTION_SERIALIZABLE"], correct: 1},
-                {question: "Which driver converts JDBC calls directly into the vendor-specific database protocol?", options: ["Type 1", "Type 2", "Type 3", "Type 4"], correct: 3},
-                {question: "A client-side program is typically executed on the:", options: ["Server", "User's browser/computer", "Database", "Firewall"], correct: 1},
-                {question: "The main purpose of a server-side program is:", options: ["UI rendering", "Client data validation", "Data storage and processing", "Local file management"], correct: 2},
-                {question: "Which interface is used to interact with the database in JDBC?", options: ["Driver", "Connection", "Statement", "ResultSet"], correct: 1}
-            ]
-            // Modules 4, 5, 6 would continue here with 10 questions each for a complete quiz pool
-        };
-        // --- END QUIZ DATA ---
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // Safely set user info
+        const usernameDisplay = document.getElementById('username-display');
+        const welcomeName = document.getElementById('welcome-name');
+        const userAvatar = document.getElementById('user-avatar');
         
-        // --- GLOBAL STATE ---
-        const ELEMENTS = {
-            setup: document.getElementById('setupContainer'),
-            quiz: document.getElementById('quizContainer'),
-            results: document.getElementById('resultsContainer'),
-            teamNameInput: document.getElementById('teamName'),
-            moduleSelect: document.getElementById('moduleSelect'),
-            numQuestionsSelect: document.getElementById('numQuestions'),
-            timePerQuestionSelect: document.getElementById('timePerQuestion'),
-            teamMembersDiv: document.getElementById('teamMembers'),
-            addMemberBtn: document.getElementById('addMemberBtn'),
-            startQuizBtn: document.getElementById('startQuizBtn'),
-            // Quiz elements
-            teamNameDisplay: document.getElementById('teamNameDisplay'),
-            teamScoreValue: document.getElementById('teamScoreValue'),
-            memberList: document.getElementById('memberList'),
-            questionNumber: document.getElementById('questionNumber'),
-            timerValue: document.getElementById('timerValue'),
-            turnAvatar: document.getElementById('turnAvatar'),
-            currentPlayerName: document.getElementById('currentPlayerName'),
-            questionText: document.getElementById('questionText'),
-            optionsGrid: document.getElementById('optionsGrid'),
-            skipBtn: document.getElementById('skipBtn'),
-            submitBtn: document.getElementById('submitBtn'),
-            chatInput: document.getElementById('chatInput'),
-            sendChatBtn: document.getElementById('sendChatBtn'),
-            chatMessages: document.getElementById('chatMessages'),
-            // Results elements
-            finalScore: document.getElementById('finalScore'),
-            correctAnswersDisplay: document.getElementById('correctAnswers'),
-            accuracyDisplay: document.getElementById('accuracy'),
-            avgTimeDisplay: document.getElementById('avgTime'),
-            performanceList: document.getElementById('performanceList')
-        };
+        if (usernameDisplay) usernameDisplay.textContent = currentUser.username;
+        if (welcomeName) welcomeName.textContent = currentUser.fullname;
+        if (userAvatar) userAvatar.textContent = currentUser.fullname.charAt(0).toUpperCase();
 
-        let team = [];
-        let quizState = {};
-        let timerInterval;
-        let selectedOption = null;
-
-        // --- SETUP LOGIC ---
-
-        function addMemberInput(name = '', removable = true) {
-            const memberCount = ELEMENTS.teamMembersDiv.children.length;
-            if (memberCount >= 4) {
-                ELEMENTS.addMemberBtn.disabled = true;
-                return;
-            }
-
-            const memberInputDiv = document.createElement('div');
-            memberInputDiv.className = 'member-input';
+        // Safely set stats
+        if (currentUser.stats) {
+            const levelDisplay = document.getElementById('level-display');
+            const streakDisplay = document.getElementById('streak-display');
+            const quizzesDisplay = document.getElementById('quizzes-display');
+            const badgesDisplay = document.getElementById('badges-display');
             
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = `Member ${memberCount + 1} Name`;
-            input.className = 'member-name';
-            input.value = name;
-            input.required = true;
-            memberInputDiv.appendChild(input);
-
-            if (removable) {
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-member';
-                removeBtn.innerHTML = '&times;';
-                removeBtn.onclick = () => removeMemberInput(memberInputDiv);
-                memberInputDiv.appendChild(removeBtn);
-            }
-
-            ELEMENTS.teamMembersDiv.appendChild(memberInputDiv);
-            if (memberCount + 1 >= 4) {
-                ELEMENTS.addMemberBtn.disabled = true;
-            }
+            if (levelDisplay) levelDisplay.textContent = currentUser.stats.level || 1;
+            if (streakDisplay) streakDisplay.textContent = currentUser.stats.currentStreak || 0;
+            if (quizzesDisplay) quizzesDisplay.textContent = currentUser.stats.totalQuizzes || 0;
+            if (badgesDisplay) badgesDisplay.textContent = currentUser.stats.badges ? currentUser.stats.badges.length : 0;
         }
 
-        function removeMemberInput(element) {
-            const memberCount = ELEMENTS.teamMembersDiv.children.length;
-            if (memberCount > 3) {
-                ELEMENTS.teamMembersDiv.removeChild(element);
-                ELEMENTS.addMemberBtn.disabled = false;
-            } else {
-                alert("A team must have at least 3 members.");
+        const modules = [
+            {
+                id: 0,
+                number: "0",
+                title: "Prerequisites",
+                description: "Basic programming concepts in C & Python, OOP fundamentals, data structures",
+                topics: 15,
+                questions: 20,
+                hours: "LO 1"
+            },
+            {
+                id: 1,
+                number: "I",
+                title: "Introduction to OOP in Java",
+                description: "OOP concepts, objects, classes, encapsulation, inheritance, polymorphism, abstraction, Java APIs",
+                topics: 20,
+                questions: 30,
+                hours: "LO 1"
+            },
+            {
+                id: 2,
+                number: "II",
+                title: "Inheritance & Exception Handling",
+                description: "Types of inheritance, method overriding, super keyword, exception handling with try-catch",
+                topics: 18,
+                questions: 25,
+                hours: "LO 1"
+            },
+            {
+                id: 3,
+                number: "III",
+                title: "Client and Server Side Programming",
+                description: "Java Database Connectivity (JDBC), JDBC drivers, SQL queries with Java",
+                topics: 12,
+                questions: 20,
+                hours: "LO 3"
+            },
+            {
+                id: 4,
+                number: "IV",
+                title: "Fundamentals of Java Script",
+                description: "Servlets, JSP, HTML forms, HTTP requests, DOM manipulation, server-side programming",
+                topics: 25,
+                questions: 35,
+                hours: "LO 4"
+            },
+            {
+                id: 5,
+                number: "V",
+                title: "Web Programming using React",
+                description: "React framework, components, props, state, routing, conditional rendering",
+                topics: 20,
+                questions: 30,
+                hours: "LO 5"
+            },
+            {
+                id: 6,
+                number: "VI",
+                title: "Application of Spring Framework",
+                description: "Spring framework basics, dependency injection, AOP, Spring MVC, RESTful APIs",
+                topics: 15,
+                questions: 25,
+                hours: "LO 6"
             }
-        }
+        ];
 
-        // Initialize with default 3 members and set event listener
-        ELEMENTS.teamMembersDiv.innerHTML = ''; // Clear initial placeholders
-        addMemberInput("Alice", false);
-        addMemberInput("Bob", true);
-        addMemberInput("Charlie", true);
-        ELEMENTS.addMemberBtn.addEventListener('click', () => addMemberInput('', true));
+        const modulesContainer = document.getElementById('modules-container');
         
-        // --- QUIZ GAME ENGINE ---
-
-        function startGame() {
-            const teamName = ELEMENTS.teamNameInput.value.trim();
-            const moduleKey = ELEMENTS.moduleSelect.value;
-            const numQuestions = parseInt(ELEMENTS.numQuestionsSelect.value);
-            const timePerQuestion = parseInt(ELEMENTS.timePerQuestionSelect.value);
-
-            const memberInputs = Array.from(document.querySelectorAll('#teamMembers .member-name'));
-            const memberNames = memberInputs.map(input => input.value.trim()).filter(name => name);
-            
-            if (!teamName || memberNames.length < 3) {
-                alert("Please enter a team name and ensure there are at least 3 members.");
-                return;
-            }
-
-            if (memberNames.length > 4) {
-                 alert("A team can have a maximum of 4 members.");
-                return;
-            }
-
-            // 1. Initialize Team
-            team = memberNames.map(name => ({
-                name: name,
-                initial: name.charAt(0).toUpperCase(),
-                score: 0,
-                correct: 0,
-                wrong: 0,
-                timeSpent: 0
-            }));
-
-            // 2. Initialize Quiz State
-            const moduleQuestions = quizData[moduleKey];
-            if (!moduleQuestions || moduleQuestions.length < numQuestions) {
-                alert("Not enough questions available for this module/question count. Please try another selection.");
-                return;
-            }
-
-            // Shuffle and select questions
-            const shuffledQuestions = moduleQuestions.sort(() => 0.5 - Math.random());
-            const questions = shuffledQuestions.slice(0, numQuestions).map(q => ({
-                ...q,
-                options: q.options.sort(() => 0.5 - Math.random()) // Shuffle options too
-            }));
-
-            quizState = {
-                teamName: teamName,
-                questions: questions,
-                currentQIndex: 0,
-                currentPlayerIndex: 0,
-                maxScore: numQuestions * 10,
-                totalTimePerQ: timePerQuestion,
-                totalTimeElapsed: 0,
-                totalCorrect: 0,
-                totalAnswered: 0
-            };
-
-            // 3. Switch UI
-            ELEMENTS.setup.style.display = 'none';
-            ELEMENTS.results.style.display = 'none';
-            ELEMENTS.quiz.classList.add('active');
-
-            // 4. Update Panel and Start Quiz
-            updateTeamPanel();
-            loadQuestion();
-        }
-
-        function updateTeamPanel() {
-            ELEMENTS.teamNameDisplay.textContent = quizState.teamName;
-            ELEMENTS.teamScoreValue.textContent = quizState.totalCorrect * 10;
-            
-            ELEMENTS.memberList.innerHTML = '';
-            team.forEach((member, index) => {
-                const isActive = index === quizState.currentPlayerIndex;
-                const memberCard = document.createElement('div');
-                memberCard.className = `member-card ${isActive ? 'active' : ''}`;
-                memberCard.innerHTML = `
-                    <div class="member-avatar">${member.initial}</div>
-                    <div class="member-info">
-                        <div class="member-name">${member.name}</div>
-                        <div class="member-status">Score: ${member.score} (${member.correct} Correct)</div>
-                    </div>
-                `;
-                ELEMENTS.memberList.appendChild(memberCard);
-            });
-
-            const currentPlayer = team[quizState.currentPlayerIndex];
-            ELEMENTS.turnAvatar.textContent = currentPlayer.initial;
-            ELEMENTS.currentPlayerName.textContent = currentPlayer.name;
-        }
-
-        function loadQuestion() {
-            clearInterval(timerInterval);
-            selectedOption = null;
-
-            if (quizState.currentQIndex >= quizState.questions.length) {
-                showResults();
-                return;
-            }
-
-            const currentQ = quizState.questions[quizState.currentQIndex];
-
-            // Update UI for new question
-            ELEMENTS.questionNumber.textContent = `Question ${quizState.currentQIndex + 1} of ${quizState.questions.length}`;
-            ELEMENTS.questionText.textContent = currentQ.question;
-            ELEMENTS.optionsGrid.innerHTML = '';
-            ELEMENTS.submitBtn.disabled = true;
-            ELEMENTS.skipBtn.disabled = false;
-
-            // Render options
-            currentQ.options.forEach((optionText, index) => {
-                const optionBtn = document.createElement('button');
-                optionBtn.className = 'option-btn';
-                optionBtn.textContent = optionText;
-                optionBtn.setAttribute('data-index', index);
-                optionBtn.onclick = () => selectOption(optionBtn, index);
-                ELEMENTS.optionsGrid.appendChild(optionBtn);
-            });
-
-            // Reset chat/discussion
-            ELEMENTS.chatMessages.innerHTML = `
-                <div class="chat-message">
-                    <div class="chat-author">System</div>
-                    <div class="chat-text">Discuss with your team before answering!</div>
-                </div>
-            `;
-            
-            startTimer();
-            updateTeamPanel();
-        }
-
-        function selectOption(button, index) {
-            if (ELEMENTS.submitBtn.disabled) return;
-            
-            Array.from(ELEMENTS.optionsGrid.children).forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
-            selectedOption = index;
-            ELEMENTS.submitBtn.disabled = false;
-        }
-
-        function startTimer() {
-            let timeLeft = quizState.totalTimePerQ;
-            ELEMENTS.timerValue.textContent = timeLeft;
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                ELEMENTS.timerValue.textContent = timeLeft;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    submitAnswer(true); // Submit with no answer if time runs out
-                }
-            }, 1000);
-        }
-        
-        function getOptionButton(index) {
-             return Array.from(ELEMENTS.optionsGrid.children).find(btn => parseInt(btn.getAttribute('data-index')) === index);
-        }
-
-        function submitAnswer(timedOut = false) {
-            clearInterval(timerInterval);
-            ELEMENTS.submitBtn.disabled = true;
-            ELEMENTS.skipBtn.disabled = true;
-            const timeTaken = quizState.totalTimePerQ - parseInt(ELEMENTS.timerValue.textContent);
-            const currentQ = quizState.questions[quizState.currentQIndex];
-            const currentPlayer = team[quizState.currentPlayerIndex];
-            const correctOptionIndex = currentQ.correct;
-
-            let isCorrect = false;
-            let scoreEarned = 0;
-            
-            // Highlight all options and disable clicks
-            Array.from(ELEMENTS.optionsGrid.children).forEach(btn => {
-                btn.disabled = true;
-            });
-            
-            const correctButton = getOptionButton(correctOptionIndex);
-            
-            if (timedOut) {
-                // Time out: 0 points, mark correct option
-                isCorrect = false;
-                scoreEarned = 0;
-                correctButton.classList.add('correct');
-            } else if (selectedOption !== null) {
-                const selectedButton = getOptionButton(selectedOption);
+        if (modulesContainer) {
+            modules.forEach(module => {
+                const progress = (currentUser.moduleProgress && currentUser.moduleProgress[module.id]) || 0;
+                let status = 'new';
+                let statusText = 'New';
                 
-                if (selectedOption === correctOptionIndex) {
-                    // Correct answer
-                    isCorrect = true;
-                    scoreEarned = 10;
-                    selectedButton.classList.add('correct');
-                    quizState.totalCorrect++;
-                    currentPlayer.correct++;
-                } else {
-                    // Wrong answer
-                    isCorrect = false;
-                    scoreEarned = 0;
-                    selectedButton.classList.add('wrong');
-                    correctButton.classList.add('correct');
-                    currentPlayer.wrong++;
+                if (progress === 100) {
+                    status = 'completed';
+                    statusText = 'Completed';
+                } else if (progress > 0) {
+                    status = 'progress';
+                    statusText = 'In Progress';
                 }
-                quizState.totalAnswered++;
-            } else {
-                // Skipped (no selection made by button or timer)
-                correctButton.classList.add('correct');
-            }
 
-            // Update Global/Player Stats
-            currentPlayer.score += scoreEarned;
-            currentPlayer.timeSpent += timeTaken;
-            quizState.totalTimeElapsed += timeTaken;
-            
-            // Show result temporarily and move to next question/turn
-            setTimeout(() => {
-                nextTurn();
-            }, 2000); // 2 second delay to show the result
-        }
-
-        function nextTurn() {
-            // Move to next player
-            quizState.currentPlayerIndex = (quizState.currentPlayerIndex + 1) % team.length;
-            
-            // If the turn has cycled back to the first player, move to the next question
-            if (quizState.currentPlayerIndex === 0) {
-                quizState.currentQIndex++;
-            }
-            
-            loadQuestion();
-        }
-
-        function showResults() {
-            ELEMENTS.quiz.classList.remove('active');
-            ELEMENTS.results.classList.add('active');
-            
-            const totalQuestions = quizState.questions.length;
-            const finalTeamScore = quizState.totalCorrect * 10;
-            
-            // Final Score & Stats
-            ELEMENTS.finalScore.textContent = `${finalTeamScore} / ${quizState.maxScore}`;
-            ELEMENTS.correctAnswersDisplay.textContent = quizState.totalCorrect;
-            ELEMENTS.accuracyDisplay.textContent = `${(quizState.totalCorrect / totalQuestions * 100).toFixed(1)}%`;
-            ELEMENTS.avgTimeDisplay.textContent = `${(quizState.totalTimeElapsed / totalQuestions).toFixed(1)}s`;
-            
-            // Team Performance
-            team.sort((a, b) => b.score - a.score); // Sort by score
-            ELEMENTS.performanceList.innerHTML = '';
-
-            team.forEach(member => {
-                const item = document.createElement('div');
-                item.className = 'performance-item';
-                item.innerHTML = `
-                    <div class="perf-avatar">${member.initial}</div>
-                    <div class="perf-details">
-                        <div class="perf-name">${member.name}</div>
-                        <div class="perf-stats">${member.correct} Correct, ${member.wrong} Wrong. Avg Time: ${(member.timeSpent / (member.correct + member.wrong || 1)).toFixed(1)}s</div>
+                const moduleCard = document.createElement('div');
+                moduleCard.className = 'module-card';
+               moduleCard.innerHTML = `
+    <div class="module-header">
+        <div class="module-number">${module.number}</div>
+        <div class="module-status status-${status}">${statusText}</div>
+    </div>
+    <div class="module-title">${module.title}</div>
+    <div class="module-description">${module.description}</div>
+    
+    <div style="margin: 15px 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+            <span style="font-size: 0.85em; color: #666;">Progress</span>
+            <span style="font-size: 0.85em; color: #667eea; font-weight: 600;">${progress}%</span>
+        </div>
+        <div style="height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+            <div style="height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: ${progress}%;"></div>
+        </div>
+    </div>
+    
+    <div class="module-footer">
+                        <div class="module-stats">
+                            <span>📝 ${module.questions} Questions</span>
+                            <span>⏱️ ${module.hours}</span>
+                        </div>
+                        <button class="start-quiz-btn" onclick="startQuiz(${module.id})">
+                            ${progress > 0 ? 'Continue' : 'Start Quiz'}
+                        </button>
                     </div>
-                    <div class="perf-score">${member.score} pts</div>
                 `;
-                ELEMENTS.performanceList.appendChild(item);
+                modulesContainer.appendChild(moduleCard);
             });
         }
         
-        // --- CHAT LOGIC (Simulated) ---
-
-        function appendChatMessage(author, message) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'chat-message';
-            messageDiv.innerHTML = `
-                <div class="chat-author">${author}</div>
-                <div class="chat-text">${message}</div>
-            `;
-            ELEMENTS.chatMessages.appendChild(messageDiv);
-            ELEMENTS.chatMessages.scrollTop = ELEMENTS.chatMessages.scrollHeight; // Auto-scroll
+        // --- NEW JAVASCRIPT ADDITION ---
+        
+        function checkCertificateEligibility() {
+        	// Check if user has completed all 7 modules
+        	let allCompleted = true;
+        	
+        	for (let i = 0; i < modules.length; i++) {
+        		const progress = (currentUser.moduleProgress && currentUser.moduleProgress[i]) || 0;
+        		if (progress < 100) {
+        			allCompleted = false;
+        			break;
+        		}
+        	}
+        	
+        	// Show certificate banner if all modules completed
+        	const certificateBanner = document.getElementById('certificateBanner');
+        	if (certificateBanner && allCompleted) {
+        		certificateBanner.style.display = 'block';
+        	}
         }
         
-        function handleChatSend() {
-            const message = ELEMENTS.chatInput.value.trim();
-            if (message) {
-                const currentPlayer = team[quizState.currentPlayerIndex];
-                appendChatMessage(currentPlayer.name, message);
-                ELEMENTS.chatInput.value = '';
-            }
+        // Call this function after loading modules
+        checkCertificateEligibility();
+        
+        // --- END NEW JAVASCRIPT ADDITION ---
+
+
+        function startQuiz(moduleId) {
+            localStorage.setItem('selectedModule', moduleId);
+            window.location.href = 'quiz.html';
         }
 
-        // --- EVENT LISTENERS ---
-        ELEMENTS.startQuizBtn.addEventListener('click', startGame);
-        ELEMENTS.submitBtn.addEventListener('click', () => submitAnswer(false));
-        ELEMENTS.skipBtn.addEventListener('click', () => submitAnswer(false)); // Submitting without selection is considered a skip/fail
-        ELEMENTS.sendChatBtn.addEventListener('click', handleChatSend);
-        ELEMENTS.chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleChatSend();
+        function loadLeaderboard() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const sortedUsers = users.sort((a, b) => b.stats.totalScore - a.stats.totalScore).slice(0, 5);
+            
+            const leaderboardPreview = document.getElementById('leaderboard-preview');
+            leaderboardPreview.innerHTML = '';
+
+            sortedUsers.forEach((user, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+                
+                const li = document.createElement('li');
+                li.className = 'leaderboard-item';
+                li.innerHTML = `
+                    <div class="leaderboard-rank ${rankClass}">${rank}</div>
+                    <div class="leaderboard-user">
+                        <strong>${user.fullname}</strong>
+                        <span style="color: #999;">@${user.username}</span>
+                    </div>
+                    <div class="leaderboard-score">${user.stats.totalScore} pts</div>
+                `;
+                leaderboardPreview.appendChild(li);
+            });
+        }
+
+        loadLeaderboard();
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
             }
         });
-
     </script>
+    <script src="darkmode.js"></script>
+    <script src="animations.js"></script>
 </body>
+
 </html>
+
+            
